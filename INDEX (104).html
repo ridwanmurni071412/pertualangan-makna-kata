@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Makna Denotatif & Konotatif</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            /* Background ceria */
+            background-color: #f3e8ff;
+            background-image: radial-gradient(circle at 100% 100%, #fbcfe8 0, #fbcfe8 12px, transparent 12px), radial-gradient(circle at 0 0, #fbcfe8 0, #fbcfe8 12px, transparent 12px), radial-gradient(circle at 100% 0, #e9d5ff 0, #e9d5ff 12px, transparent 12px), radial-gradient(circle at 0 100%, #e9d5ff 0, #e9d5ff 12px, transparent 12px);
+            background-size: 48px 48px;
+        }
+        .bounce-in {
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .highlight {
+            color: #ec4899; /* pink-500 */
+            background-color: #fce7f3; /* pink-100 */
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.375rem;
+            font-weight: 900;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Container Utama Game -->
+    <div class="w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden relative border-4 border-purple-300">
+        
+        <!-- Layar Mulai -->
+        <div id="start-screen" class="p-8 text-center flex flex-col items-center justify-center min-h-[400px]">
+            <div class="text-6xl mb-4">🕵️‍♂️📚</div>
+            <h1 class="text-3xl font-black text-purple-600 mb-2">Detektif Makna Kata</h1>
+            <p class="text-gray-600 mb-8 text-lg">Bantu temukan mana kata yang punya makna sebenarnya (Denotatif) dan makna kiasan (Konotatif)!</p>
+            <button onclick="startGame()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-4 px-6 rounded-2xl text-xl shadow-lg transform transition hover:scale-105 active:scale-95">
+                Mulai Bermain! 🚀
+            </button>
+        </div>
+
+        <!-- Layar Game -->
+        <div id="game-screen" class="hidden flex flex-col min-h-[500px]">
+            <!-- Header (Progress & Score) -->
+            <div class="bg-purple-100 p-4 flex justify-between items-center border-b-4 border-purple-200">
+                <div class="bg-white px-4 py-2 rounded-xl font-bold text-purple-700 shadow-sm">
+                    Soal: <span id="progress-text">1/10</span>
+                </div>
+                <div class="bg-white px-4 py-2 rounded-xl font-bold text-pink-600 shadow-sm flex items-center gap-2">
+                    ⭐ <span id="score-text">0</span>
+                </div>
+            </div>
+
+            <!-- Area Soal -->
+            <div class="p-6 flex-grow flex flex-col justify-center">
+                <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 text-center shadow-inner mb-8">
+                    <p id="question-text" class="text-xl md:text-2xl text-gray-800 leading-relaxed font-bold">
+                        <!-- Teks soal akan muncul di sini -->
+                    </p>
+                </div>
+
+                <!-- Tombol Jawaban -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="checkAnswer('Denotatif')" class="bg-blue-400 hover:bg-blue-500 text-white font-black py-4 px-6 rounded-2xl text-xl shadow-[0_6px_0_#2563eb] hover:shadow-[0_4px_0_#2563eb] hover:translate-y-[2px] active:shadow-[0_0px_0_#2563eb] active:translate-y-[6px] transition-all">
+                        DENOTATIF<br>
+                        <span class="text-sm font-normal">(Makna Sebenarnya)</span>
+                    </button>
+                    <button onclick="checkAnswer('Konotatif')" class="bg-orange-400 hover:bg-orange-500 text-white font-black py-4 px-6 rounded-2xl text-xl shadow-[0_6px_0_#ea580c] hover:shadow-[0_4px_0_#ea580c] hover:translate-y-[2px] active:shadow-[0_0px_0_#ea580c] active:translate-y-[6px] transition-all">
+                        KONOTATIF<br>
+                        <span class="text-sm font-normal">(Makna Kiasan)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overlay Feedback (Benar/Salah) -->
+        <div id="feedback-overlay" class="hidden absolute inset-0 bg-black/60 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+            <div id="feedback-card" class="bg-white w-full max-w-sm rounded-3xl p-6 text-center shadow-2xl transform scale-0 transition-transform duration-300">
+                <div id="feedback-icon" class="text-6xl mb-4">✅</div>
+                <h2 id="feedback-title" class="text-3xl font-black mb-2 text-green-500">Benar!</h2>
+                <p id="feedback-explanation" class="text-gray-700 text-lg mb-6 leading-relaxed">Penjelasan akan muncul di sini.</p>
+                <button onclick="nextQuestion()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl text-lg shadow-lg transform transition active:scale-95">
+                    Lanjut Soal ➡️
+                </button>
+            </div>
+        </div>
+
+        <!-- Layar Hasil Akhir -->
+        <div id="result-screen" class="hidden p-8 text-center flex flex-col items-center justify-center min-h-[400px]">
+            <div class="text-7xl mb-4" id="result-emoji">🏆</div>
+            <h1 class="text-3xl font-black text-purple-600 mb-2">Permainan Selesai!</h1>
+            <div class="bg-pink-100 border-4 border-pink-300 rounded-3xl p-6 my-6 w-full">
+                <p class="text-gray-600 text-lg mb-1">Total Skormu:</p>
+                <p class="text-6xl font-black text-pink-600" id="final-score">100</p>
+            </div>
+            <p class="text-gray-600 text-lg mb-2">Gelar Detektifmu:</p>
+            <h2 class="text-2xl font-black text-blue-600 mb-8" id="result-predicate">Ahli Bahasa</h2>
+            
+            <button onclick="resetGame()" class="w-full bg-gradient-to-r from-blue-400 to-indigo-500 hover:from-blue-500 hover:to-indigo-600 text-white font-bold py-4 px-6 rounded-2xl text-xl shadow-lg transform transition hover:scale-105 active:scale-95">
+                Main Lagi 🔄
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Database Soal
+        const questions = [
+            {
+                text: "Ayah <span class='highlight'>membanting tulang</span> setiap hari demi mencukupi kebutuhan keluarga.",
+                answer: "Konotatif",
+                explanation: "Kata 'membanting tulang' bermakna kiasan yang berarti <strong>bekerja sangat keras</strong>. Ayah tidak benar-benar membanting tulang miliknya."
+            },
+            {
+                text: "Susu kaya akan kalsium yang sangat baik untuk menjaga kesehatan <span class='highlight'>tulang</span> kita.",
+                answer: "Denotatif",
+                explanation: "Kata 'tulang' di sini bermakna sebenarnya, yaitu <strong>rangka tubuh</strong> makhluk hidup."
+            },
+            {
+                text: "Karena terbukti bersalah, pencuri itu akhirnya diseret ke <span class='highlight'>meja hijau</span>.",
+                answer: "Konotatif",
+                explanation: "'Meja hijau' bermakna kiasan untuk <strong>pengadilan</strong>. Bukan berarti mejanya berwarna hijau ya!"
+            },
+            {
+                text: "Ibu membelikan taplak baru untuk menutupi <span class='highlight'>meja hijau</span> yang ada di ruang tamu.",
+                answer: "Denotatif",
+                explanation: "Kata ini bermakna sebenarnya, yaitu sebuah <strong>meja yang warnanya hijau</strong>."
+            },
+            {
+                text: "Berkat lagunya yang viral, penyanyi cilik itu kini sedang <span class='highlight'>naik daun</span>.",
+                answer: "Konotatif",
+                explanation: "'Naik daun' bermakna kiasan yang artinya sedang <strong>terkenal</strong> atau mendapat nasib baik."
+            },
+            {
+                text: "Kiki melihat seekor ulat bulu merayap dan <span class='highlight'>naik daun</span> mangga di halaman rumah.",
+                answer: "Denotatif",
+                explanation: "Kata ini bermakna sebenarnya, yaitu ulat yang bergerak <strong>naik ke atas selembar daun</strong>."
+            },
+            {
+                text: "Sepulang dari Bandung, Paman membawakan <span class='highlight'>buah tangan</span> yang sangat banyak.",
+                answer: "Konotatif",
+                explanation: "'Buah tangan' bermakna kiasan yang artinya <strong>oleh-oleh</strong>."
+            },
+            {
+                text: "Adik memetik <span class='highlight'>buah</span> mangga dari pohon di belakang rumah.",
+                answer: "Denotatif",
+                explanation: "Kata 'buah' bermakna sebenarnya, yaitu <strong>bagian tumbuhan</strong> yang berasal dari bunga."
+            },
+            {
+                text: "Doni tidak bersalah, ia hanya dijadikan <span class='highlight'>kambing hitam</span> oleh teman-temannya.",
+                answer: "Konotatif",
+                explanation: "'Kambing hitam' bermakna kiasan untuk <strong>orang yang disalahkan</strong> padahal tidak berbuat salah."
+            },
+            {
+                text: "Kakek memiliki lima ekor <span class='highlight'>kambing hitam</span> di peternakannya.",
+                answer: "Denotatif",
+                explanation: "Bermakna sebenarnya, yaitu hewan ternak (<strong>kambing</strong>) yang warna bulunya <strong>hitam</strong>."
+            }
+        ];
+
+        // State Permainan
+        let currentIndex = 0;
+        let score = 0;
+
+        // Fungsi untuk menghapus tag HTML agar tidak ikut terbaca oleh sistem
+        function stripHTML(html) {
+            let doc = new DOMParser().parseFromString(html, 'text/html');
+            return doc.body.textContent || "";
+        }
+
+        // Fungsi Pembaca Teks (Text-to-Speech)
+        function speakQuestion(htmlText) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Hentikan suara yang sedang berjalan
+                const text = stripHTML(htmlText);
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                utterance.lang = 'id-ID'; // Bahasa Indonesia
+                
+                // Suara guru laki-laki dewasa (sekitar 35 tahun)
+                // Menurunkan nada (pitch) agar terdengar lebih berat dan berwibawa
+                utterance.pitch = 0.75; 
+                utterance.rate = 0.9;  // Kecepatan membaca disesuaikan agar jelas seperti guru menjelaskan
+                
+                // Mengambil daftar suara yang tersedia di perangkat
+                const voices = window.speechSynthesis.getVoices();
+                const idVoices = voices.filter(v => v.lang.includes('id'));
+                
+                if (idVoices.length > 0) {
+                    utterance.voice = idVoices[0]; 
+                }
+                
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Web Audio API Setup
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            // Resume context if browser suspends it
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            if (type === 'correct') {
+                // Suara "Ting" menyenangkan
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // Nada C5
+                oscillator.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.1); // Naik ke C6
+                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.5);
+            } else {
+                // Suara "Buzzer" pendek
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            }
+        }
+
+        // Fungsi Memulai Game
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('game-screen').classList.add('bounce-in');
+            loadQuestion();
+        }
+
+        // Fungsi Memuat Soal
+        function loadQuestion() {
+            const currentQ = questions[currentIndex];
+            document.getElementById('question-text').innerHTML = currentQ.text;
+            document.getElementById('progress-text').innerText = `${currentIndex + 1}/10`;
+            document.getElementById('score-text').innerText = score;
+
+            // Bacakan soal yang sedang ditampilkan
+            speakQuestion(currentQ.text);
+        }
+
+        // Fungsi Mengecek Jawaban
+        function checkAnswer(selectedAnswer) {
+            // Matikan suara pembaca soal saat siswa sudah menekan jawaban
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+
+            const currentQ = questions[currentIndex];
+            const isCorrect = selectedAnswer === currentQ.answer;
+            
+            const overlay = document.getElementById('feedback-overlay');
+            const card = document.getElementById('feedback-card');
+            const icon = document.getElementById('feedback-icon');
+            const title = document.getElementById('feedback-title');
+            const explanation = document.getElementById('feedback-explanation');
+            const btn = card.querySelector('button');
+
+            overlay.classList.remove('hidden');
+            
+            // Animasi pop-up
+            setTimeout(() => {
+                card.classList.remove('scale-0');
+                card.classList.add('scale-100');
+            }, 10);
+
+            if (isCorrect) {
+                playSound('correct');
+                score += 10;
+                document.getElementById('score-text').innerText = score;
+                
+                icon.innerText = "🎉";
+                title.innerText = "Benar Sekali!";
+                title.className = "text-3xl font-black mb-2 text-green-500";
+                btn.className = "w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl text-lg shadow-lg transform transition active:scale-95";
+            } else {
+                playSound('wrong');
+                icon.innerText = "😅";
+                title.innerText = "Kurang Tepat!";
+                title.className = "text-3xl font-black mb-2 text-red-500";
+                btn.className = "w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-xl text-lg shadow-lg transform transition active:scale-95";
+            }
+
+            explanation.innerHTML = currentQ.explanation;
+        }
+
+        // Fungsi Lanjut ke Soal Berikutnya
+        function nextQuestion() {
+            const overlay = document.getElementById('feedback-overlay');
+            const card = document.getElementById('feedback-card');
+            
+            // Animasi tutup
+            card.classList.remove('scale-100');
+            card.classList.add('scale-0');
+            
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                
+                currentIndex++;
+                if (currentIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    showResult();
+                }
+            }, 300);
+        }
+
+        // Fungsi Menampilkan Hasil Akhir
+        function showResult() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Pastikan suara mati di layar hasil
+            }
+            document.getElementById('game-screen').classList.add('hidden');
+            const resultScreen = document.getElementById('result-screen');
+            resultScreen.classList.remove('hidden');
+            resultScreen.classList.add('bounce-in');
+
+            document.getElementById('final-score').innerText = score;
+
+            let predicate = "";
+            let emoji = "";
+            
+            if (score === 100) {
+                predicate = "Ahli Bahasa Sejati!";
+                emoji = "👑";
+            } else if (score >= 80) {
+                predicate = "Detektif Kata Hebat!";
+                emoji = "🌟";
+            } else if (score >= 50) {
+                predicate = "Penulis Cilik!";
+                emoji = "✍️";
+            } else {
+                predicate = "Pejuang Bahasa!";
+                emoji = "💪";
+            }
+
+            document.getElementById('result-predicate').innerText = predicate;
+            document.getElementById('result-emoji').innerText = emoji;
+        }
+
+        // Fungsi Mereset Game
+        function resetGame() {
+            currentIndex = 0;
+            score = 0;
+            
+            // Acak urutan soal untuk permainan berikutnya (opsional agar tidak bosan)
+            questions.sort(() => Math.random() - 0.5);
+
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
